@@ -1,0 +1,18 @@
+$Userdatafo = @()
+$sub = Get-AzSubscription
+foreach ($sub1 in $sub) {
+    Set-AzContext -Subscription $sub1.Name
+    $role = Get-AzRoleDefinition | Where-Object { ($_.Name -like 'Subscription Admin') }
+    $role1 = Get-AzRoleAssignment | Where-Object { ($_.RoleDefinitionName -like 'Subscription Admin') }
+    $role1.count
+    foreach ($role2 in $role1) {
+        $Userfo = new-object psobject
+        $Userfo | Add-Member -membertype noteproperty -name "SubscriptionName" -Value $sub1.name
+        $Userfo | Add-Member -membertype noteproperty -name "RoleName" -Value $role.Name
+        $Userfo | Add-Member -membertype noteproperty -name "ID" -Value $role.ID
+        $Userfo | Add-Member -membertype noteproperty -name "DisplayName" -Value $role2.DisplayName
+        $Userfo | Add-Member -membertype noteproperty -name "RoleDefinitionName" -Value $role2.RoleDefinitionName
+        $Userdatafo += $userfo
+    }
+}
+$Userdatafo | Export-Csv C:\RoleDetails.csv 
